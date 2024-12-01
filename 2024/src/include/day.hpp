@@ -2,6 +2,6 @@
 #define DAY_HPP
 
 // select day to run
-#define DAY01
+#define DAY 1
 
 #endif

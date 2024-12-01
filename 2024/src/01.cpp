@@ -1,5 +1,5 @@
 #include "day.hpp"
-#ifdef DAY01
+#if DAY == 1
 
 #include <iostream>
 
