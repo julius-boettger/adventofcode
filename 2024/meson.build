@@ -9,6 +9,7 @@ executable(
         'src/01/1.cpp',
         'src/01/2.cpp',
         'src/02/1.cpp',
+        'src/02/2.cpp',
     ],
 
     # compiler arguments (assuming gcc)
