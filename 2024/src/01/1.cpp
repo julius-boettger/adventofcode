@@ -1,6 +1,7 @@
 #include "util.hpp"
 #if DAY == 1 && PUZZLE == 1
 
+#include <cmath>
 #include <vector>
 #include <sstream>
 #include <algorithm>
@@ -24,7 +25,13 @@ void solution(std::string input) {
     std::sort(list1.begin(), list1.end());
     std::sort(list2.begin(), list2.end());
 
-    // loop through lists and compare
+    // loop through lists and calculate total distance
+    auto total_distance { 0 };
+    for (auto i { 0uz }; i < list1.size(); i++) {
+        total_distance += std::abs(list1[i] - list2[i]);
+    }
+
+    std::cout << total_distance << std::endl;
 }
 
 #endif
