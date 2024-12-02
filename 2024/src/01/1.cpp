@@ -1,33 +1,11 @@
-#include "day.hpp"
-#if DAY == 1
+#include "util.hpp"
+#if DAY == 1 && PUZZLE == 1
 
-#include <format>
 #include <vector>
-#include <fstream>
 #include <sstream>
-#include <iostream>
 #include <algorithm>
 
-std::string readInput() {
-    std::ifstream inputFile { std::format("input/{:02}.txt", DAY) };
-    if (!inputFile.is_open()) {
-        throw;
-    }
-
-    // read whole file
-    std::string fileContents {
-        std::istreambuf_iterator<char>(inputFile),
-        std::istreambuf_iterator<char>()
-    };
-
-    inputFile.close();
-    return fileContents;
-}
-
-
-int main() {
-    auto input { readInput() };
-
+void solution(std::string input) {
     // split input into two lists
     std::vector<int> list1, list2;
     std::istringstream inputStream { input };
@@ -47,8 +25,6 @@ int main() {
     std::sort(list2.begin(), list2.end());
 
     // loop through lists and compare
-
-    return 0;
 }
 
 #endif

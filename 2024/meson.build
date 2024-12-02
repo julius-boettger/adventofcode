@@ -5,7 +5,8 @@ executable(
 
     include_directories: 'src/include',
     sources: [
-        'src/01.cpp',
+        'src/util.cpp',
+        'src/01/1.cpp',
     ],
 
     # compiler arguments (assuming gcc)
