@@ -4,7 +4,7 @@
 #include <fstream>
 
 static std::string readInput() {
-    std::ifstream inputFile { std::format("input/{:02}/{}.txt", DAY, PUZZLE) };
+    std::ifstream inputFile { std::format("input/{:02}.txt", DAY) };
     if (!inputFile.is_open()) {
         throw;
     }
