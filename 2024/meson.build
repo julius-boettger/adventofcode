@@ -7,6 +7,7 @@ executable(
     sources: [
         'src/util.cpp',
         'src/01/1.cpp',
+        'src/02/1.cpp',
     ],
 
     # compiler arguments (assuming gcc)
