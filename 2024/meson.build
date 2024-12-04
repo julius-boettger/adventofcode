@@ -12,6 +12,7 @@ executable(
         'src/02/2.cpp',
         'src/03/1.cpp',
         'src/03/2.cpp',
+        'src/04/1.cpp',
     ],
 
     # compiler arguments (assuming gcc)
