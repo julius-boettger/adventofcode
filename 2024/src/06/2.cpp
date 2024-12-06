@@ -47,6 +47,8 @@ struct Position {
         grid[static_cast<uint>(row)][static_cast<uint>(col)] = c;
     }
 
+    bool operator==(const Position&) const = default;
+
     Position operator+(const Direction& direction) const {
         return {
             .row { this->row + direction.row },
@@ -76,12 +78,13 @@ struct Position {
 };
 
 bool loopObstructionPossible(Position pos, Direction direction) {
+    const auto initialPos { pos };
     // look to right
     direction.rotateRight();
     // search line of sight for for 'X' followed by '#'
     Position nextPos;
     while ((nextPos = pos + direction).isInBounds()) {
-        if (pos.getChar() == 'X' && nextPos.getChar() == '#') {
+        if (pos.getChar() != '.' && nextPos.getChar() == '#' && pos != initialPos) {
             return true;
         }
         pos += direction;
@@ -99,14 +102,13 @@ void solution(std::string input) {
     rows = static_cast<int>(grid.size());
     cols = static_cast<int>(grid[0].size());
 
-    // number of possible positions for obstructions
-    // that would cause the guard to walk in a loop
-    auto loopObstructions { 0 };
-
     Position pos { Position::getStart() };
     Direction direction { UP };
     while (true) {
-        pos.setChar('X'); // "i have been here"
+        // "i have been here"
+        if (pos.getChar() == '.') {
+            pos.setChar('X');
+        }
 
         auto nextPos { pos + direction };
         if (!nextPos.isInBounds()) {
@@ -114,7 +116,7 @@ void solution(std::string input) {
         }
 
         if (loopObstructionPossible(pos, direction)) {
-            loopObstructions++;
+            nextPos.setChar('O');
         }
 
         if (nextPos.getChar() == '#') {
@@ -122,6 +124,19 @@ void solution(std::string input) {
         }
 
         pos += direction;
+    }
+
+    // number of possible positions for obstructions
+    // that would cause the guard to walk in a loop
+    auto loopObstructions { 0 };
+    for (auto& row : grid) {
+        for (auto& c : row) {
+            if (c == 'O') {
+                loopObstructions++;
+            }
+            std::cout << c;
+        }
+        std::cout << std::endl;
     }
 
     std::cout << loopObstructions << std::endl;
