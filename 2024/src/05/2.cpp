@@ -86,6 +86,17 @@ std::vector<int> getSortedUpdate(const std::vector<int>& update, const std::vect
         }
     }
 
+    // swap numbers of not compliant update rules until compliant
+    while (!isCompliant(sortedUpdate, relevantUpdateRules)) {
+        for (auto& updateRule : relevantUpdateRules) {
+            if (!updateRule.isCompliantWith(sortedUpdate)) {
+                const auto beforePosition { std::find(sortedUpdate.begin(), sortedUpdate.end(), updateRule.before) };
+                const auto  afterPosition { std::find(sortedUpdate.begin(), sortedUpdate.end(), updateRule.after ) };
+                std::iter_swap(beforePosition, afterPosition);
+            }
+        }
+    }
+
     return sortedUpdate;
 }
 
