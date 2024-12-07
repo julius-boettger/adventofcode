@@ -33,7 +33,7 @@ void solution(std::string input) {
         line.erase(std::remove(line.begin(), line.end(), ':'), line.end());
         std::istringstream lineStream { line };
 
-        uint expectedResult;
+        ulong expectedResult;
         lineStream >> expectedResult;
 
         std::vector<uint> operands;
@@ -52,10 +52,6 @@ void solution(std::string input) {
         ulong maxResult { std::accumulate(operands.begin(), operands.end(), 1uz, std::multiplies()) };
         if (expectedResult == maxResult) {
             sumOfExpectedValues += maxResult;
-            continue;
-        }
-
-        if (expectedResult < minResult || expectedResult > maxResult) {
             continue;
         }
 
