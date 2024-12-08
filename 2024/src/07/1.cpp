@@ -1,17 +1,17 @@
 #include "util.hpp"
 #if DAY == 7 && PUZZLE == 1
 
+#include <cmath>
 #include <vector>
-#include <numeric>
 #include <sstream>
 #include <algorithm>
 
 ulong calculate(const std::vector<uint>& operands, uint operators) {
     ulong result { operands[0] };
     for (auto i { 1uz }; i < operands.size(); i++) {
-        auto& operand { operands[i] };
+        const auto& operand { operands[i] };
         // there is one operator less than there are operands
-        auto operatorIndex { i - 1 };
+        const auto operatorIndex { i - 1 };
         // if bit operatorIndex of operators is 1: use multiplication
         if ((operators & (1 << operatorIndex)) != 0) {
             result *= operand;
@@ -42,28 +42,17 @@ void solution(std::string input) {
             operands.push_back(tempOperand);
         }
 
-        // sum
-        uint minResult { std::accumulate(operands.begin(), operands.end(), 0u) };
-        if (expectedResult == minResult) {
-            sumOfExpectedValues += minResult;
-            continue;
-        }
-        // product
-        ulong maxResult { std::accumulate(operands.begin(), operands.end(), 1uz, std::multiplies()) };
-        if (expectedResult == maxResult) {
-            sumOfExpectedValues += maxResult;
-            continue;
-        }
-
         // operators to be used between operands.
         // if bit n of this variable is 1, the n'th operator
         // should be multiplication, otherwise it should be addition.
-        // start at 1, because 0 (meaning only addition) was already checked with minResult.
-        uint operators { 1 };
+        uint operators { 0 };
+        // maximum is operatorCount 1's (multiplication for everything)
+        const uint operatorCount { static_cast<uint>(operands.size() - 1) };
+        const uint maxOperators { static_cast<uint>(std::pow(2, operatorCount) - 1) };
 
         // try every possible combination of operators
-        ulong result;
-        while ((result = calculate(operands, operators++)) != maxResult) {
+        for (; operators <= maxOperators; operators++) {
+            const ulong result { calculate(operands, operators) };
             if (result == expectedResult) {
                 sumOfExpectedValues += result;
                 break;
