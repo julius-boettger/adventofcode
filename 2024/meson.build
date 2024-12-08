@@ -29,6 +29,8 @@ executable(
         '-pedantic-errors',
         # treat warnings as errors
         '-Werror',
+        # except some trivial warnings
+        '-Wno-error=unused-parameter', '-Wno-error=unused-variable', '-Wno-error=unused-but-set-variable',
         # enable more warnings
         '-Wall', '-Weffc++', '-Wextra', '-Wconversion', '-Wsign-conversion', '-Wshadow',
     ],
