@@ -5,9 +5,9 @@
 #include <iostream>
 
 // select day to run
-#define DAY 8
+#define DAY 9
 // select puzzle of day to run, starting from 1
-#define PUZZLE 2
+#define PUZZLE 1
 
 // solution of puzzle
 void solution(std::string input);
