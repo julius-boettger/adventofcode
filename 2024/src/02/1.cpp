@@ -1,5 +1,4 @@
 #include "util.hpp"
-#if DAY == 2 && PUZZLE == 1
 
 #include <cmath>
 #include <sstream>
@@ -52,5 +51,3 @@ void solution(std::string input) {
 
     std::cout << total_safe_reports << std::endl;
 }
-
-#endif

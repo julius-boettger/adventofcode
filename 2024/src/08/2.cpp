@@ -1,5 +1,4 @@
 #include "util.hpp"
-#if DAY == 8 && PUZZLE == 2
 
 #include <vector>
 #include <sstream>
@@ -134,5 +133,3 @@ void solution(std::string input) {
 
     std::cout << antinodes << std::endl;
 }
-
-#endif

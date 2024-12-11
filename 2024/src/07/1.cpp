@@ -1,5 +1,4 @@
 #include "util.hpp"
-#if DAY == 7 && PUZZLE == 1
 
 #include <cmath>
 #include <vector>
@@ -62,5 +61,3 @@ void solution(std::string input) {
 
     std::cout << sumOfExpectedValues << std::endl;
 }
-
-#endif

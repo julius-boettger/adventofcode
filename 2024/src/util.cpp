@@ -4,7 +4,8 @@
 #include <fstream>
 
 static std::string readInput() {
-    std::ifstream inputFile { std::format("input/{:02}.txt", DAY) };
+    // INPUT_PATH is set by meson.build
+    std::ifstream inputFile { INPUT_PATH };
     if (!inputFile.is_open()) {
         throw;
     }
@@ -20,6 +21,7 @@ static std::string readInput() {
 }
 
 int main() {
+    // solution to run is managed by meson.build
     solution(readInput());
     return 0;
 }

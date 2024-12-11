@@ -1,5 +1,4 @@
 #include "util.hpp"
-#if DAY == 1 && PUZZLE == 2
 
 #include <cmath>
 #include <vector>
@@ -30,5 +29,3 @@ void solution(std::string input) {
 
     std::cout << total_similarity << std::endl;
 }
-
-#endif

@@ -1,5 +1,4 @@
 #include "util.hpp"
-#if DAY == 3 && PUZZLE == 1
 
 #include <regex>
 
@@ -19,5 +18,3 @@ void solution(std::string input) {
 
     std::cout << sum << std::endl;
 }
-
-#endif

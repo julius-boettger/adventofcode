@@ -1,5 +1,4 @@
 #include "util.hpp"
-#if DAY == 5 && PUZZLE == 2
 
 #include <regex>
 #include <vector>
@@ -138,5 +137,3 @@ void solution(std::string input) {
 
     std::cout << middleNumberSum << std::endl;
 }
-
-#endif

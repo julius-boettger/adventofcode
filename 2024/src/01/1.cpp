@@ -1,5 +1,4 @@
 #include "util.hpp"
-#if DAY == 1 && PUZZLE == 1
 
 #include <cmath>
 #include <vector>
@@ -33,5 +32,3 @@ void solution(std::string input) {
 
     std::cout << total_distance << std::endl;
 }
-
-#endif

@@ -1,5 +1,4 @@
 #include "util.hpp"
-#if DAY == 10 && PUZZLE == 1
 
 #include <set>
 #include <array>
@@ -99,5 +98,3 @@ void solution(std::string input) {
 
     std::cout << totalScore << std::endl;
 }
-
-#endif

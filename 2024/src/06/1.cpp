@@ -1,5 +1,4 @@
 #include "util.hpp"
-#if DAY == 6 && PUZZLE == 1
 
 #include <vector>
 #include <sstream>
@@ -113,5 +112,3 @@ void solution(std::string input) {
 
     std::cout << visitedPositions << std::endl;
 }
-
-#endif

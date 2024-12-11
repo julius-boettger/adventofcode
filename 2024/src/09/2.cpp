@@ -1,5 +1,4 @@
 #include "util.hpp"
-#if DAY == 9 && PUZZLE == 2
 
 #include <vector>
 #include <limits>
@@ -107,5 +106,3 @@ void solution(std::string input) {
 
     std::cout << checksum << std::endl;
 }
-
-#endif

@@ -1,5 +1,4 @@
 #include "util.hpp"
-#if DAY == 4 && PUZZLE == 2
 
 #include <regex>
 #include <vector>
@@ -50,5 +49,3 @@ void solution(std::string input) {
 
     std::cout << wordsCounted << std::endl;
 }
-
-#endif

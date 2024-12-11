@@ -1,5 +1,4 @@
 #include "util.hpp"
-#if DAY == 6 && PUZZLE == 2
 // this can't produce the right answer and i don't know why
 
 #include <vector>
@@ -142,5 +141,3 @@ void solution(std::string input) {
 
     std::cout << loopObstructions << std::endl;
 }
-
-#endif

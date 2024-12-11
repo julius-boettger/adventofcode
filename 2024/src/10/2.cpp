@@ -1,5 +1,4 @@
 #include "util.hpp"
-#if DAY == 10 && PUZZLE == 2
 
 #include <array>
 #include <vector>
@@ -88,5 +87,3 @@ void solution(std::string input) {
 
     std::cout << totalRating << std::endl;
 }
-
-#endif

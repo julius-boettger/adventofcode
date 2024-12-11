@@ -1,36 +1,25 @@
 project('advent-of-code', 'cpp')
 
+# select day to run as two-digit string like '01'
+day = '10'
+# select puzzle of day to run, starting from 1
+puzzle = '2'
+
 executable(
     meson.project_name(),
 
     include_directories: 'src/include',
     sources: [
         'src/util.cpp',
-        'src/01/1.cpp',
-        'src/01/2.cpp',
-        'src/02/1.cpp',
-        'src/02/2.cpp',
-        'src/03/1.cpp',
-        'src/03/2.cpp',
-        'src/04/1.cpp',
-        'src/04/2.cpp',
-        'src/05/1.cpp',
-        'src/05/2.cpp',
-        'src/06/1.cpp',
-        'src/06/2.cpp',
-        'src/07/1.cpp',
-        'src/07/2.cpp',
-        'src/08/1.cpp',
-        'src/08/2.cpp',
-        'src/09/1.cpp',
-        'src/09/2.cpp',
-        'src/10/1.cpp',
-        'src/10/2.cpp',
+        # only compile the selected source file
+        'src' / day / puzzle + '.cpp',
     ],
 
     # compiler arguments (assuming gcc)
     cpp_args: [
         '-std=c++23',
+        # set path to input for day
+        '-DINPUT_PATH="input/' + day + '.txt"',
         # throw errors when using compiler extensions
         '-pedantic-errors',
         # treat warnings as errors
