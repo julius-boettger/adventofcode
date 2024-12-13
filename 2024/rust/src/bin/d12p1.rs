@@ -1,100 +1,109 @@
-// doesn't work yet, because separate regions with
-// the same letter need to be priced independently
-
-use std::collections::HashMap;
+// doesn't work yet, because perimeter is
+// not counted correctly, it should be less
 
 type Num = u32;
-
 #[derive(Debug)]
 struct Region {
     area: Num,
     perimeter: Num
 }
 
-fn process_area(plot: &char, region_map: &mut HashMap<char, Region>) {
-    match region_map.get_mut(plot) {
-        Some(region) => { region.area += 1; }
-        None => {
-            region_map.insert(*plot, Region {
-                area: 1,
-                perimeter: 0,
-            });
+type CoordNum = i16;
+#[derive(Clone, Copy)]
+struct Coord {
+    row: CoordNum,
+    col: CoordNum
+}
+impl std::ops::Add for Coord {
+    type Output = Coord;
+    fn add(self, other: Coord) -> Coord {
+        Coord {
+            row: self.row + other.row,
+            col: self.col + other.col
         }
     }
 }
+impl Coord {
+    fn get_letter<'a>(&self, map: &'a Vec<Vec<char>>) -> &'a char {
+        &map[self.row as usize][self.col as usize]
+    }
 
-fn process_perimeter(plot: &char, next_plot: &char, region_map: &mut HashMap<char, Region>) {
-    if plot == next_plot {
+    fn set_letter(&self, map: &mut Vec<Vec<char>>, letter: char) {
+        map[self.row as usize][self.col as usize] = letter;
+    }
+
+    fn is_in_bounds(&self, map: &Vec<Vec<char>>) -> bool {
+        self.row >= 0 &&
+        self.col >= 0 &&
+        (self.row as usize) < map.len() &&
+        (self.col as usize) < map[0].len()
+    }
+}
+
+const DIRECTIONS: [Coord; 4] = [
+    Coord { row: -1, col:  0 }, // up
+    Coord { row:  0, col:  1 }, // right
+    Coord { row:  1, col:  0 }, // down
+    Coord { row:  0, col: -1 }, // left
+];
+
+const EXPLORED: char = '.';
+
+fn get_unexplored_region_start(map: &Vec<Vec<char>>) -> Option<Coord> {
+    for row in 0 .. map.len() {
+        for col in 0 .. map[0].len() {
+            if map[row][col] != EXPLORED {
+                return Some(Coord {
+                    row: row as CoordNum,
+                    col: col as CoordNum
+                })
+            }
+        }
+    }
+    None
+}
+
+fn explore_region(map: &mut Vec<Vec<char>>, start: Coord) -> Region {
+    let letter = &start.get_letter(map).clone();
+    let mut region = Region { area: 0, perimeter: 0 };
+    explore_recursive(map, start, letter, &mut region);
+    region
+}
+
+fn explore_recursive(map: &mut Vec<Vec<char>>, coord: Coord, letter: &char, region: &mut Region) {
+    if !coord.is_in_bounds(map) || coord.get_letter(map) != letter {
+        region.perimeter += 1;
         return;
     }
 
-    for p in [plot, next_plot] {
-        region_map.get_mut(&p).unwrap().perimeter += 1;
+    // mark this as explored
+    coord.set_letter(map, EXPLORED);
+    region.area += 1;
+
+    for direction in DIRECTIONS {
+        explore_recursive(map, coord + direction, letter, region);
     }
 }
 
 fn main() {
-    let map: Vec<Vec<char>> = advent_of_code::input!()
+    let mut map: Vec<Vec<char>> = advent_of_code::input!()
         .lines()
         .map(|l| l.chars().collect())
         .collect();
 
-    // key: name of region
-    // value: stats about region
-    let mut region_map: HashMap<char, Region> = HashMap::new();
-
-    // iterate through rows
-    for row in 0 .. map.len() {
-        let max_col = map[0].len() - 2;
-        for col in 0 ..= max_col {
-            let plot = map[row][col];
-            let next_plot = map[row][col + 1];
-
-            if col == 0 {
-                process_area(&plot, &mut region_map);
-                // add extra fence at start
-                region_map.get_mut(&plot).unwrap().perimeter += 1;
-            }
-
-            process_area(&next_plot, &mut region_map);
-            process_perimeter(&plot, &next_plot, &mut region_map);
-
-            // add extra fence at end
-            if col == max_col {
-                region_map.get_mut(&next_plot).unwrap().perimeter += 1;
-            }
-        }
+    let mut regions: Vec<Region> = vec![];
+    while let Some(start) = get_unexplored_region_start(&map) {
+        regions.push(explore_region(&mut map, start));
     }
 
-    // iterate through columns
-    for col in 0 .. map[0].len() {
-        let max_row = map.len() - 2;
-        for row in 0 ..= max_row {
-            let plot = map[row][col];
-            let next_plot = map[row + 1][col];
-
-            // add extra fence at start
-            if row == 0 {
-                region_map.get_mut(&plot).unwrap().perimeter += 1;
-            }
-
-            process_perimeter(&plot, &next_plot, &mut region_map);
-
-            // add extra fence at end
-            if row == max_row {
-                region_map.get_mut(&next_plot).unwrap().perimeter += 1;
-            }
-        }
+    for region in &regions {
+        println!("{:?}", region);
     }
 
-    let price = region_map
-        .values()
+    let price = regions
+        .into_iter()
         .map(|r| r.area * r.perimeter)
         .sum::<Num>();
 
-    for pair in region_map {
-        println!("{}: {} x {}", pair.0, pair.1.area, pair.1.perimeter);
-    }
-    
     println!("{:?}", price);
 }
