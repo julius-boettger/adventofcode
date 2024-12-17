@@ -1,4 +1,5 @@
-// doesn't work yet
+// doesn't work yet, don't know why,
+// example input works, real input doesn't
 
 type CoordNum = i8;
 #[derive(Clone, Copy, PartialEq, Debug)]
@@ -89,6 +90,11 @@ fn move_robot(grid: &mut Vec<Vec<char>>, robot: Coord, direction: &Coord) -> Coo
 }
 
 fn get_obstacles(grid: &Vec<Vec<char>>, coord: &Coord, direction: &Coord, obstacles: &mut Option<Vec<Coord>>) {
+    // result has already been determined, obstacles cant be moved
+    if let None = obstacles {
+        return;
+    }
+
     let obstacle= match coord.get_char(grid) {
         '[' => *coord,
         ']' => *coord + LEFT,
@@ -204,17 +210,16 @@ fn main() {
     robot.set_char(&mut grid, '.');
 
     for direction in directions {
-        robot.set_char(&mut grid, '.');
+        //robot.set_char(&mut grid, '.');
         robot = move_robot(&mut grid, robot, direction);
-        robot.set_char(&mut grid, '@');
-
-        for row in &grid {
-            for c in row {
-                print!("{}", c);
-            }
-            println!();
-        }
-        println!();
+        //robot.set_char(&mut grid, '@');
+        //for row in &grid {
+        //    for c in row {
+        //        print!("{}", c);
+        //    }
+        //    println!();
+        //}
+        //println!();
     }
 
     let mut box_gps_sum = 0;
