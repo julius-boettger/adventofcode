@@ -5,4 +5,5 @@ edition = "2021"
 [dependencies]
 regex = "1.11"
 image = "0.25"
+rayon = "1.10"
 num_enum = "0.7"
