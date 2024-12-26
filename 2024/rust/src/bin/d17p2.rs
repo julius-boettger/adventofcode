@@ -1,4 +1,4 @@
-// i'm not sure if this works yet, it might need to run for a while...
+// doesn't work, too slow, didn't find answer after 12 hours
 
 type Reg = u64;
 #[derive(Debug)]
@@ -73,10 +73,7 @@ fn main() {
         .map(|x| x.parse().unwrap())
         .collect();
 
-    /////////////////////////////////////////////////////////
-    // TODO make this 0
-    let mut initial_a: Reg = 80000000000; // took 32 min
-    /////////////////////////////////////////////////////////
+    let mut initial_a: Reg = 0;
     'a_loop: loop {
 
         if initial_a % 1e8 as Reg == 0 {
