@@ -2,14 +2,14 @@ use rayon::prelude::*;
 
 type Num = u64;
 
-fn next_secret_number(secret_number: Num) -> Num {
+const fn next_secret_number(secret_number: Num) -> Num {
     let mut result = secret_number;
     result ^= result * 64;
-    result %= 16777216;
+    result %= 16_777_216;
     result ^= result / 32;
-    result %= 16777216;
+    result %= 16_777_216;
     result ^= result * 2048;
-    result %= 16777216;
+    result %= 16_777_216;
     result
 }
 
