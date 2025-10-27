@@ -9,14 +9,15 @@ macro_rules! input {
 /// return content of input file determined by source file path
 pub fn input(source_file_path: &'static str) -> String {
     // determine day to select input file from source file path
-    let pattern = regex::Regex::new(r"src/bin/d(\d{2})p\d\.rs").unwrap();
+    let pattern = regex::Regex::new(r"src/bin/y(\d{2})d(\d{2})p\d\.rs").unwrap();
     let Some(capture_groups) = pattern.captures(source_file_path) else {
-        panic!("called from {}, from which the day (to select the input file) cannot be determined", source_file_path)
+        panic!("called from {source_file_path}, from which the year and/or day (to select the input file) cannot be determined")
     };
-    let day = &capture_groups[1].to_string();
+    let year = &capture_groups[1].to_string();
+    let day = &capture_groups[2].to_string();
 
     // return input file content
-    let input_file_path = format!("input/{}.txt", day);
+    let input_file_path = format!("input/{year}/{day}.txt");
     std::fs::read_to_string(&input_file_path)
-        .expect(format!("{} could not be read", input_file_path).as_str())
+        .expect(&format!("{input_file_path} could not be read"))
 }
