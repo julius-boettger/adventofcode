@@ -49,7 +49,7 @@ fn write_image(robots: &Vec<Robot>, iteration: u16) {
             image::Luma([255]));
     }
 
-    img.save(format!("generated/{}.png", iteration)).unwrap();
+    img.save(format!("generated/{iteration}.png")).unwrap();
 }
 
 fn main() {
@@ -58,7 +58,7 @@ fn main() {
     let pattern = regex::Regex::new(r"p=(-?\d+),(-?\d+) v=(-?\d+),(-?\d+)").unwrap();
     for line in advent_of_code::input!().lines() {
         let Some(capture_groups) = pattern.captures(line) else {
-            panic!("pattern doesn't match line: {}", line);
+            panic!("pattern doesn't match line: {line}");
         };
         robots.push(Robot {
             position: Coord {
@@ -72,7 +72,7 @@ fn main() {
         });
     }
 
-    for i in 1 ..= 10_000 as u16 {
+    for i in 1 ..= 10_000u16 {
         for robot in &mut robots {
             robot.advance();
         }

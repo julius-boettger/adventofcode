@@ -101,7 +101,7 @@ fn main() {
     let pattern = regex::Regex::new(r"p=(-?\d+),(-?\d+) v=(-?\d+),(-?\d+)").unwrap();
     for line in advent_of_code::input!().lines() {
         let Some(capture_groups) = pattern.captures(line) else {
-            panic!("pattern doesn't match line: {}", line);
+            panic!("pattern doesn't match line: {line}");
         };
         robots.push(Robot {
             position: Coord {
@@ -132,5 +132,5 @@ fn main() {
             .count();
     }
 
-    println!("{}", safety_factor);
+    println!("{safety_factor}");
 }
