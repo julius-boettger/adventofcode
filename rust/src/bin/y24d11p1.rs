@@ -1,7 +1,7 @@
 type Stone = u64;
 
-fn blink_at_stone(stone: &Stone) -> Vec<Stone> {
-    if *stone == 0 {
+fn blink_at_stone(stone: Stone) -> Vec<Stone> {
+    if stone == 0 {
         return vec![1];
     }
 
@@ -18,21 +18,21 @@ fn blink_at_stone(stone: &Stone) -> Vec<Stone> {
     vec![stone * 2024]
 }
 
-fn blink_at_stones(stones: Vec<Stone>) -> Vec<Stone> {
-    stones.iter().map(|stone| blink_at_stone(&stone)).flatten().collect()
+fn blink_at_stones(stones: &[Stone]) -> Vec<Stone> {
+    stones.iter().flat_map(|stone| blink_at_stone(*stone)).collect()
 }
 
 fn main() {
     let mut input = advent_of_code::input!();
-    input = input.replace("\n", "");
+    input = input.replace('\n', "");
     let mut stones: Vec<Stone> = input
-        .split(" ")
+        .split(' ')
         .map(|s| s.parse().unwrap())
         .collect();
 
     for i in 0..25 {
         println!("blink {} at {} stones", i + 1, stones.len());
-        stones = blink_at_stones(stones);
+        stones = blink_at_stones(&stones);
     }
     println!("=> {} stones", stones.len());
 }
