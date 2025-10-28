@@ -14,6 +14,7 @@
     devShells = eachSystem (system: pkgs: {
       default = pkgs.mkShell {
         packages = with pkgs; [
+          rustc
           cargo
           clippy
           cargo-edit # provides `cargo upgrade` for dependencies
