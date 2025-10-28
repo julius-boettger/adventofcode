@@ -8,9 +8,9 @@ struct Registers {
     c: Reg
 }
 
-fn combo_operand(operand: &u8, regs: &Registers) -> Reg {
+fn combo_operand(operand: u8, regs: &Registers) -> Reg {
     match operand {
-        0 ..= 3 => (*operand).into(),
+        0 ..= 3 => operand.into(),
         4 => regs.a,
         5 => regs.b,
         6 => regs.c,
@@ -18,14 +18,14 @@ fn combo_operand(operand: &u8, regs: &Registers) -> Reg {
     }
 }
 
-fn execute_instruction(opcode: &u8, operand: &u8, regs: &mut Registers, out: &mut Vec<u8>, pc: &mut u8) {
+fn execute_instruction(opcode: u8, operand: u8, regs: &mut Registers, out: &mut Vec<u8>, pc: &mut u8) {
     match opcode {
         0 => {
             regs.a /= 1 << combo_operand(operand, regs);
             *pc += 2;
         },
         1 => {
-            regs.b ^= *operand as Reg;
+            regs.b ^= Reg::from(operand);
             *pc += 2;
         },
         2 => {
@@ -34,7 +34,7 @@ fn execute_instruction(opcode: &u8, operand: &u8, regs: &mut Registers, out: &mu
         },
         3 => {
             if regs.a != 0 {
-                *pc = *operand;
+                *pc = operand;
             } else {
                 *pc += 2;
             }
@@ -76,8 +76,8 @@ fn main() {
     let mut initial_a: Reg = 0;
     'a_loop: loop {
 
-        if initial_a % 1e8 as Reg == 0 {
-            println!("attempting a = {}", initial_a);
+        if initial_a % 100_000_000 == 0 {
+            println!("attempting a = {initial_a}");
         }
 
         regs.a = initial_a;
@@ -90,10 +90,10 @@ fn main() {
         // program counter
         let mut pc: u8 = 0;
 
-        'pc_loop: while pc < (program.len() - 1) as u8 {
+        'pc_loop: while pc < u8::try_from(program.len() - 1).unwrap() {
             let opcode = program[pc as usize];
             let operand = program[(pc + 1) as usize];
-            execute_instruction(&opcode, &operand, &mut regs, &mut out, &mut pc);
+            execute_instruction(opcode, operand, &mut regs, &mut out, &mut pc);
 
             // only continue execution if output matches program (so far)
             for i in 0 .. out.len() {
@@ -111,5 +111,5 @@ fn main() {
         initial_a += 1;
     }
 
-    println!("match found: a = {}", initial_a);
+    println!("match found: a = {initial_a}");
 }

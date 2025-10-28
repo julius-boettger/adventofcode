@@ -6,9 +6,11 @@ struct Registers {
     c: Reg
 }
 
+#[allow(clippy::enum_glob_use)]
 use Opcode::*;
 #[derive(num_enum::TryFromPrimitive, Debug)]
 #[repr(u8)]
+#[allow(clippy::upper_case_acronyms)]
 enum Opcode {
     /// a = a / 2.pow((combo operand))
     ADV,
@@ -28,9 +30,9 @@ enum Opcode {
     CDV
 }
 
-fn combo_operand(operand: &u8, regs: &Registers) -> Reg {
+fn combo_operand(operand: u8, regs: &Registers) -> Reg {
     match operand {
-        0 ..= 3 => (*operand).into(),
+        0 ..= 3 => operand.into(),
         4 => regs.a,
         5 => regs.b,
         6 => regs.c,
@@ -38,14 +40,14 @@ fn combo_operand(operand: &u8, regs: &Registers) -> Reg {
     }
 }
 
-fn execute_instruction(opcode: &Opcode, operand: &u8, regs: &mut Registers, out: &mut Vec<u8>, pc: &mut u8) {
+fn execute_instruction(opcode: &Opcode, operand: u8, regs: &mut Registers, out: &mut Vec<u8>, pc: &mut u8) {
     match opcode {
         ADV => {
             regs.a /= (2 as Reg).pow(combo_operand(operand, regs));
             *pc += 2;
         },
         BXL => {
-            regs.b ^= *operand as Reg;
+            regs.b ^= Reg::from(operand);
             *pc += 2;
         },
         BST => {
@@ -54,7 +56,7 @@ fn execute_instruction(opcode: &Opcode, operand: &u8, regs: &mut Registers, out:
         },
         JNZ => {
             if regs.a != 0 {
-                *pc = *operand;
+                *pc = operand;
             } else {
                 *pc += 2;
             }
@@ -98,10 +100,10 @@ fn main() {
     // output of program
     let mut out: Vec<u8> = vec![];
 
-    while pc < (program.len() - 1) as u8 {
+    while pc < u8::try_from(program.len() - 1).unwrap() {
         let opcode = Opcode::try_from(program[pc as usize]).unwrap();
         let operand = program[(pc + 1) as usize];
-        execute_instruction(&opcode, &operand, &mut regs, &mut out, &mut pc);
+        execute_instruction(&opcode, operand, &mut regs, &mut out, &mut pc);
     }
 
     println!("{}", out
