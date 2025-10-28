@@ -21,7 +21,7 @@ impl std::ops::AddAssign for Coord {
     }
 }
 impl Coord {
-    fn from_char(c: char) -> &'static Self {
+    const fn from_char(c: char) -> &'static Self {
         match c {
             '<' => &LEFT,
             'v' => &DOWN,
@@ -30,11 +30,11 @@ impl Coord {
             _ => panic!()
         }
     }
-    fn set_char(&self, grid: &mut Vec<Vec<char>>, c: char) {
+    fn set_char(self, grid: &mut [Vec<char>], c: char) {
         grid[usize::try_from(self.row).unwrap()]
             [usize::try_from(self.col).unwrap()] = c;
     }
-    fn get_char<'a>(&self, grid: &'a mut Vec<Vec<char>>) -> &'a char {
+    fn get_char(self, grid: &[Vec<char>]) -> &char {
         &grid[usize::try_from(self.row).unwrap()]
              [usize::try_from(self.col).unwrap()]
     }
@@ -45,7 +45,7 @@ const DOWN:  Coord = Coord { row:  1, col:  0 };
 const RIGHT: Coord = Coord { row:  0, col:  1 };
 const UP:    Coord = Coord { row: -1, col:  0 };
 
-fn get_robot(grid: &Vec<Vec<char>>) -> Coord {
+fn get_robot(grid: &[Vec<char>]) -> Coord {
     for row in 0 .. grid.len() {
         for col in 0 .. grid[0].len() {
             if grid[row][col] == '@' {
@@ -60,12 +60,12 @@ fn get_robot(grid: &Vec<Vec<char>>) -> Coord {
 }
 
 // returns new position of robot
-fn move_robot(grid: &mut Vec<Vec<char>>, robot: Coord, direction: &Coord) -> Coord {
+fn move_robot(grid: &mut [Vec<char>], robot: Coord, direction: Coord) -> Coord {
     let mut next_coord = robot;
     let mut next_char;
     let mut moves = 0;
     loop {
-        next_coord += *direction;
+        next_coord += direction;
         next_char = next_coord.get_char(grid);
         moves += 1;
         
@@ -88,13 +88,13 @@ fn move_robot(grid: &mut Vec<Vec<char>>, robot: Coord, direction: &Coord) -> Coo
     // there is free space somewhere in the direction,
     // but there are obstacles to move before it
 
-    let next_to_robot = robot + *direction;
+    let next_to_robot = robot + direction;
     // remove obstacle
     next_to_robot.set_char(grid, '.');
     // put obstacle on next free space in direction
     next_coord.set_char(grid, 'O');
     // move robot to the new free space
-    return next_to_robot;
+    next_to_robot
 }
 
 fn main() {
@@ -111,18 +111,17 @@ fn main() {
     let directions: Vec<&Coord> = input
         .lines()
         .filter(|l| l.contains('v'))
-        .map(|l| l
+        .flat_map(|l| l
             .chars()
-            .map(|c| Coord::from_char(c))
-            .collect::<Vec<&Coord>>())
-        .flatten()
+            .map(Coord::from_char)
+            .collect::<Vec<_>>())
         .collect();
 
     let mut robot = get_robot(&grid);
     robot.set_char(&mut grid, '.');
 
     for direction in directions {
-        robot = move_robot(&mut grid, robot, direction);
+        robot = move_robot(&mut grid, robot, *direction);
     }
 
     let mut box_gps_sum = 0;
@@ -134,5 +133,5 @@ fn main() {
         }
     }
 
-    println!("{}", box_gps_sum);
+    println!("{box_gps_sum}");
 }

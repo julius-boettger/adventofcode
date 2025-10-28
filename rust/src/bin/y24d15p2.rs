@@ -22,8 +22,9 @@ impl std::ops::AddAssign for Coord {
         self.col += rhs.col;
     }
 }
+#[allow(clippy::cast_sign_loss)]
 impl Coord {
-    fn from_char(c: char) -> &'static Self {
+    const fn from_char(c: char) -> &'static Self {
         match c {
             '<' => &LEFT,
             'v' => &DOWN,
@@ -32,10 +33,10 @@ impl Coord {
             _ => panic!()
         }
     }
-    fn set_char(&self, grid: &mut Vec<Vec<char>>, c: char) {
+    fn set_char(self, grid: &mut [Vec<char>], c: char) {
         grid[self.row as usize][self.col as usize] = c;
     }
-    fn get_char<'a>(&self, grid: &'a Vec<Vec<char>>) -> &'a char {
+    fn get_char(self, grid: &[Vec<char>]) -> &char {
         &grid[self.row as usize][self.col as usize]
     }
 }
@@ -45,13 +46,13 @@ const DOWN:  Coord = Coord { row:  1, col:  0 };
 const RIGHT: Coord = Coord { row:  0, col:  1 };
 const UP:    Coord = Coord { row: -1, col:  0 };
 
-fn get_robot(grid: &Vec<Vec<char>>) -> Coord {
+fn get_robot(grid: &[Vec<char>]) -> Coord {
     for row in 0 .. grid.len() {
         for col in 0 .. grid[0].len() {
             if grid[row][col] == '@' {
                 return Coord {
-                    row: row as CoordNum,
-                    col: col as CoordNum
+                    row: CoordNum::try_from(row).unwrap(),
+                    col: CoordNum::try_from(col).unwrap()
                 }
             }
         }
@@ -60,9 +61,9 @@ fn get_robot(grid: &Vec<Vec<char>>) -> Coord {
 }
 
 /// returns new position of robot
-fn move_robot(grid: &mut Vec<Vec<char>>, robot: Coord, direction: &Coord) -> Coord {
+fn move_robot(grid: &mut Vec<Vec<char>>, robot: Coord, direction: Coord) -> Coord {
     // check right next to starting position
-    let next_coord = robot + *direction;
+    let next_coord = robot + direction;
     match next_coord.get_char(grid) {
         // wall, can't move
         '#' => return robot,
@@ -75,33 +76,33 @@ fn move_robot(grid: &mut Vec<Vec<char>>, robot: Coord, direction: &Coord) -> Coo
     // there is at least one obstacle in front of the robot
 
     let mut obstacles = Some(vec![]);
-    get_obstacles(grid, &next_coord, direction, &mut obstacles);
+    get_obstacles(grid, next_coord, direction, &mut obstacles);
     
     // obstacles can't be moved, so we also can't move
-    if let None = obstacles {
+    if obstacles.is_none() {
         return robot;
     }
 
     // obstacles can be moved! move them
-    move_obstacles(grid, obstacles.unwrap(), direction);
+    move_obstacles(grid, &obstacles.unwrap(), direction);
 
     // move robot to the new free space
-    robot + *direction
+    robot + direction
 }
 
-fn get_obstacles(grid: &Vec<Vec<char>>, coord: &Coord, direction: &Coord, obstacles: &mut Option<Vec<Coord>>) {
+fn get_obstacles(grid: &Vec<Vec<char>>, coord: Coord, direction: Coord, obstacles: &mut Option<Vec<Coord>>) {
     // result has already been determined, obstacles cant be moved
-    if let None = obstacles {
+    if obstacles.is_none() {
         return;
     }
 
     let obstacle= match coord.get_char(grid) {
-        '[' => *coord,
-        ']' => *coord + LEFT,
+        '[' => coord,
+        ']' => coord + LEFT,
          _  => panic!()
     };
 
-    match obstacle_can_be_moved(grid, &obstacle, direction) {
+    match obstacle_can_be_moved(grid, obstacle, direction) {
         // can be moved! free space after it!
         0 => {
             obstacles.as_mut().unwrap().push(obstacle);
@@ -123,18 +124,18 @@ fn get_obstacles(grid: &Vec<Vec<char>>, coord: &Coord, direction: &Coord, obstac
     obstacles.as_mut().unwrap().push(obstacle);
 
     // recursively check all elements in the direction of the current obstacle
-    for element in next_to_obstacle(&obstacle, direction) {
+    for element in next_to_obstacle(obstacle, direction) {
         if matches!(element.get_char(grid), '[' | ']') {
-            get_obstacles(grid, &element, direction, obstacles);
+            get_obstacles(grid, element, direction, obstacles);
         }
     }
 }
 
-fn next_to_obstacle(obstacle: &Coord, direction: &Coord) -> Vec<Coord> {
-    match *direction {
-        LEFT => vec![*obstacle + LEFT],
-        RIGHT => vec![*obstacle + RIGHT + RIGHT],
-        UP | DOWN => vec![*obstacle + *direction, *obstacle + RIGHT + *direction],
+fn next_to_obstacle(obstacle: Coord, direction: Coord) -> Vec<Coord> {
+    match direction {
+        LEFT => vec![obstacle + LEFT],
+        RIGHT => vec![obstacle + RIGHT + RIGHT],
+        UP | DOWN => vec![obstacle + direction, obstacle + RIGHT + direction],
         _ => panic!()
     }
 }
@@ -142,13 +143,13 @@ fn next_to_obstacle(obstacle: &Coord, direction: &Coord) -> Vec<Coord> {
 /// 0 => can definitely be moved (free space after)
 /// 1 => can maybe be moved (obstacle in the way)
 /// 2 => can definitely not be moved (wall in the way)
-fn obstacle_can_be_moved(grid: &Vec<Vec<char>>, obstacle: &Coord, direction: &Coord) -> u8 {
+fn obstacle_can_be_moved(grid: &[Vec<char>], obstacle: Coord, direction: Coord) -> u8 {
     let chars: Vec<char> = next_to_obstacle(obstacle, direction)
         .iter()
         .map(|c| *c.get_char(grid))
         .collect();
 
-    if chars.iter().any(|c| *c == '#') {
+    if chars.contains(&'#') {
         return 2;
     }
 
@@ -159,7 +160,7 @@ fn obstacle_can_be_moved(grid: &Vec<Vec<char>>, obstacle: &Coord, direction: &Co
     0
 }
 
-fn move_obstacles(grid: &mut Vec<Vec<char>>, obstacles: Vec<Coord>, direction: &Coord) {
+fn move_obstacles(grid: &mut [Vec<char>], obstacles: &[Coord], direction: Coord) {
     // move obstacle furthest away from the robot first
     // to make space for the one before it and so on
     for obstacle in obstacles.iter().rev() {
@@ -168,7 +169,7 @@ fn move_obstacles(grid: &mut Vec<Vec<char>>, obstacles: Vec<Coord>, direction: &
         // free space
         for e in &elements { e.set_char(grid, '.'); }
         // move obstacle
-        for e in &mut elements { *e += *direction; }
+        for e in &mut elements { *e += direction; }
         // occupy new space
         elements[0].set_char(grid, '[');
         elements[1].set_char(grid, ']');
@@ -183,27 +184,24 @@ fn main() {
         .filter(|l| l.contains('#'))
         .map(|l| l
             .chars()
-            .map(|c|
+            .flat_map(|c|
                 match c {
                     '#' => vec!['#', '#'],
                     'O' => vec!['[', ']'],
                     '.' => vec!['.', '.'],
                     '@' => vec!['@', '.'],
                      _  => panic!()
-                }
-            )
-            .flatten()
+                })
             .collect())
         .collect();
 
     let directions: Vec<&Coord> = input
         .lines()
         .filter(|l| l.contains('v'))
-        .map(|l| l
+        .flat_map(|l| l
             .chars()
-            .map(|c| Coord::from_char(c))
+            .map(Coord::from_char)
             .collect::<Vec<&Coord>>())
-        .flatten()
         .collect();
 
     let mut robot = get_robot(&grid);
@@ -211,7 +209,7 @@ fn main() {
 
     for direction in directions {
         //robot.set_char(&mut grid, '.');
-        robot = move_robot(&mut grid, robot, direction);
+        robot = move_robot(&mut grid, robot, *direction);
         //robot.set_char(&mut grid, '@');
         //for row in &grid {
         //    for c in row {
@@ -231,7 +229,7 @@ fn main() {
         }
     }
 
-    println!("{}", box_gps_sum);
+    println!("{box_gps_sum}");
 }
 
 #[cfg(test)]
@@ -251,25 +249,25 @@ mod tests {
 
     mod next_to_obstacle {
         use super::*;
-        fn test(direction: Coord, expected: Vec<Coord>) {
+        fn test(direction: Coord, expected: &[Coord]) {
             let obstacle = Coord { row: 0, col: 0 };
-            let elements = next_to_obstacle(&obstacle, &direction);
+            let elements = next_to_obstacle(obstacle, direction);
             assert_eq!(elements, expected);
         }
 
         #[test] fn up() {
             test(UP,
-                vec![Coord { row: -1, col: 0 }, Coord { row: -1, col: 1 }]);
+                &[Coord { row: -1, col: 0 }, Coord { row: -1, col: 1 }]);
         }
         #[test] fn down() {
             test(DOWN,
-                vec![Coord { row: 1, col: 0 }, Coord { row: 1, col: 1 }]);
+                &[Coord { row: 1, col: 0 }, Coord { row: 1, col: 1 }]);
         }
         #[test] fn left() {
-            test(LEFT, vec![Coord { row: 0, col: -1 }]);
+            test(LEFT, &[Coord { row: 0, col: -1 }]);
         }
         #[test] fn right() {
-            test(RIGHT, vec![Coord { row: 0, col: 2 }]);
+            test(RIGHT, &[Coord { row: 0, col: 2 }]);
         }
     }
 
@@ -278,7 +276,7 @@ mod tests {
         fn test(direction: Coord, expected: u8) {
             let grid = grid1();
             let obstacle = Coord { row: 2, col: 3 };
-            assert_eq!(obstacle_can_be_moved(&grid, &obstacle, &direction), expected);
+            assert_eq!(obstacle_can_be_moved(&grid, obstacle, direction), expected);
         }
 
         #[test] fn up() { test(UP, 0); }
@@ -289,11 +287,12 @@ mod tests {
 
     mod get_obstacles {
         use super::*;
+        #[allow(clippy::needless_pass_by_value)]
         fn test(direction: Coord, expected: Option<Vec<Coord>>) {
             let grid = grid1();
             let obstacle = Coord { row: 2, col: 3 };
             let mut obstacles = Some(vec![]);
-            get_obstacles(&grid, &obstacle, &direction, &mut obstacles);
+            get_obstacles(&grid, obstacle, direction, &mut obstacles);
             assert_eq!(obstacles, expected);
         }
 
