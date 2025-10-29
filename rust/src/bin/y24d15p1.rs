@@ -98,9 +98,9 @@ fn move_robot(grid: &mut [Vec<char>], robot: Coord, direction: Coord) -> Coord {
 }
 
 fn main() {
-    let input= advent_of_code::input!();
+    const INPUT: &str = include_str!("../../input/24/15.txt");
 
-    let mut grid: Vec<Vec<char>> = input
+    let mut grid: Vec<Vec<char>> = INPUT
         .lines()
         .filter(|l| l.contains('#'))
         .map(|l| l
@@ -108,7 +108,7 @@ fn main() {
             .collect())
         .collect();
 
-    let directions: Vec<&Coord> = input
+    let directions: Vec<&Coord> = INPUT
         .lines()
         .filter(|l| l.contains('v'))
         .flat_map(|l| l

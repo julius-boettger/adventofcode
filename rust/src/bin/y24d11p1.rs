@@ -23,9 +23,8 @@ fn blink_at_stones(stones: &[Stone]) -> Vec<Stone> {
 }
 
 fn main() {
-    let mut input = advent_of_code::input!();
-    input = input.replace('\n', "");
-    let mut stones: Vec<Stone> = input
+    let mut stones: Vec<Stone> = include_str!("../../input/24/11.txt")
+        .replace('\n', "")
         .split(' ')
         .map(|s| s.parse().unwrap())
         .collect();

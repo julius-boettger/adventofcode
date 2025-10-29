@@ -22,7 +22,7 @@ fn next_nth_secret_number(secret_number: Num) -> Num {
 }
 
 fn main() {
-    println!("{}", advent_of_code::input!().lines()
+    println!("{}", include_str!("../../input/24/22.txt").lines()
         // collect to let rayon do its magic
         .collect::<Vec<_>>().par_iter()
         .map(|line|

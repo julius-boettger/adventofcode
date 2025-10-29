@@ -90,7 +90,7 @@ fn explore_recursive(map: &mut Vec<Vec<char>>, coord: Coord, letter: char, regio
 }
 
 fn main() {
-    let mut map: Vec<Vec<char>> = advent_of_code::input!()
+    let mut map: Vec<Vec<char>> = include_str!("../../input/24/12.txt")
         .lines()
         .map(|l| l.chars().collect())
         .collect();

@@ -56,12 +56,10 @@ fn blink_at_stones(stone_map: StoneMap, movemement_cache: &mut MovementCache) ->
 }
 
 fn main() {
-    let mut input = advent_of_code::input!();
-    input = input.replace('\n', "");
-
     // key: number engraved on stone
     // value: quantity
-    let mut stone_map: StoneMap = input
+    let mut stone_map: StoneMap = include_str!("../../input/24/11.txt")
+        .replace('\n', "")
         .split(' ')
         .map(|s| (s.parse().unwrap(), 1))
         .collect();

@@ -60,8 +60,7 @@ fn execute_instruction(opcode: u8, operand: u8, regs: &mut Registers, out: &mut 
 }
 
 fn main() {
-    let input = advent_of_code::input!();
-    let input_lines: Vec<&str> = input.lines().collect();
+    let input_lines: Vec<&str> = include_str!("../../input/24/17.txt").lines().collect();
 
     let mut regs = Registers { a: 0, b: 0, c: 0 };
     regs.b = input_lines[1].replace("Register B: ", "").parse().unwrap();
