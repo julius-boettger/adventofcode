@@ -18,20 +18,20 @@ fn blink_at_stone(stone: Stone) -> Vec<Stone> {
     vec![stone * 2024]
 }
 
-fn blink_at_stones(stones: &[Stone]) -> Vec<Stone> {
-    stones.iter().flat_map(|stone| blink_at_stone(*stone)).collect()
-}
-
 fn main() {
-    let mut stones: Vec<Stone> = include_str!("../../input/24/11.txt")
-        .replace('\n', "")
-        .split(' ')
-        .map(|s| s.parse().unwrap())
-        .collect();
+    let input = include_str!("../../input/24/11.txt").replace('\n', "");
 
-    for i in 0..25 {
-        println!("blink {} at {} stones", i + 1, stones.len());
-        stones = blink_at_stones(&stones);
+    // this approach uses 3.5x less memory compared to collecting the iterator into a Vec every time
+
+    let mut stones: Box<dyn Iterator<Item = Stone>> = Box::new(
+        input
+            .split(' ')
+            .map(|s| s.parse().unwrap())
+    );
+
+    for _ in 0..25 {
+        stones = Box::new(stones.flat_map(blink_at_stone));
     }
-    println!("=> {} stones", stones.len());
+
+    println!("{} stones", stones.count());
 }
