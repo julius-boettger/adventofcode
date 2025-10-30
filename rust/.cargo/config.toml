@@ -1,2 +1,2 @@
 [alias]
-profile-heap = "run --release --features dhat-heap --bin"
+profile-heap = "run --release --features dhat-heap"

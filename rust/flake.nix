@@ -14,10 +14,10 @@
     devShells = eachSystem (system: pkgs: {
       default = pkgs.mkShell {
         packages = with pkgs; [
-          rustc
-          cargo
-          clippy
+          rustc cargo # rust
+          clippy # better linter
           cargo-edit # provides `cargo upgrade` for dependencies
+          samply # profiler
         ];
         # fix rust-analyzer in vscode
         RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";

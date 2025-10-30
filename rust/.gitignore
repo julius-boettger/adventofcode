@@ -1,3 +1,4 @@
 /.direnv
 /target
 /dhat-heap.json
+/profile.json.gz
