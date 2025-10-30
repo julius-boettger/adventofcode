@@ -55,11 +55,11 @@ fn blink_at_stones(stone_map: StoneMap, movemement_cache: &mut MovementCache) ->
     new_stone_map
 }
 
-#[advent_of_code::main]
+#[advent_of_code::main("24/11")]
 fn main() {
     // key: number engraved on stone
     // value: quantity
-    let mut stone_map: StoneMap = include_str!("../../input/24/11.txt")
+    let mut stone_map: StoneMap = (INPUT as &str)
         .replace('\n', "")
         .split(' ')
         .map(|s| (s.parse().unwrap(), 1))

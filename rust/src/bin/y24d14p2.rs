@@ -52,12 +52,12 @@ fn write_image(robots: &Vec<Robot>, iteration: u16) {
     img.save(format!("generated/{iteration}.png")).unwrap();
 }
 
-#[advent_of_code::main]
+#[advent_of_code::main("24/14")]
 fn main() {
     // construct vec of robots from input
     let mut robots: Vec<Robot> = vec![];
     let pattern = regex::Regex::new(r"p=(-?\d+),(-?\d+) v=(-?\d+),(-?\d+)").unwrap();
-    for line in include_str!("../../input/24/14.txt").lines() {
+    for line in (INPUT as &str).lines() {
         let Some(capture_groups) = pattern.captures(line) else {
             panic!("pattern doesn't match line: {line}");
         };

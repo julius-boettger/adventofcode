@@ -31,9 +31,9 @@ fn blink_at_stone(stone: Stone) -> Vec<Stone> {
     vec![stone * 2024]
 }
 
-#[advent_of_code::main]
+#[advent_of_code::main("24/11")]
 fn main() {
-    let input = include_str!("../../input/24/11.txt").replace('\n', "");
+    let input = (INPUT as &str).replace('\n', "");
 
     // this approach uses 3.5x less memory compared to collecting the iterator into a Vec every time
 
