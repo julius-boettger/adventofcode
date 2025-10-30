@@ -176,6 +176,7 @@ fn move_obstacles(grid: &mut [Vec<char>], obstacles: &[Coord], direction: Coord)
     }
 }
 
+#[advent_of_code::main]
 fn main() {
     const INPUT: &str = include_str!("../../input/24/15.txt");
 

@@ -97,6 +97,7 @@ fn move_robot(grid: &mut [Vec<char>], robot: Coord, direction: Coord) -> Coord {
     next_to_robot
 }
 
+#[advent_of_code::main]
 fn main() {
     const INPUT: &str = include_str!("../../input/24/15.txt");
 

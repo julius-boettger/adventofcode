@@ -95,6 +95,7 @@ const QUADRANTS: [Quadrant; 4] = [
     },
 ];
 
+#[advent_of_code::main]
 fn main() {
     // construct vec of robots from input
     let mut robots: Vec<Robot> = vec![];

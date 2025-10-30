@@ -7,3 +7,15 @@ regex = "1.12.2"
 image = "0.25.8"
 rayon = "1.11.0"
 num_enum = "0.7.5"
+dhat = "0.3.3" # heap profiling
+quote = "1.0.41" # for proc macros
+syn = "2.0.108" # for proc macros
+
+[lib]
+proc-macro = true
+
+# for heap profiling with dhat-rs
+[features]
+dhat-heap = []
+[profile.release]
+debug = 1

@@ -31,6 +31,7 @@ fn blink_at_stone(stone: Stone) -> Vec<Stone> {
     vec![stone * 2024]
 }
 
+#[advent_of_code::main]
 fn main() {
     let input = include_str!("../../input/24/11.txt").replace('\n', "");
 

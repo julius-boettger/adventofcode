@@ -52,6 +52,7 @@ fn write_image(robots: &Vec<Robot>, iteration: u16) {
     img.save(format!("generated/{iteration}.png")).unwrap();
 }
 
+#[advent_of_code::main]
 fn main() {
     // construct vec of robots from input
     let mut robots: Vec<Robot> = vec![];

@@ -59,6 +59,7 @@ fn execute_instruction(opcode: u8, operand: u8, regs: &mut Registers, out: &mut 
     }
 }
 
+#[advent_of_code::main]
 fn main() {
     let input_lines: Vec<&str> = include_str!("../../input/24/17.txt").lines().collect();
 

@@ -55,6 +55,7 @@ fn blink_at_stones(stone_map: StoneMap, movemement_cache: &mut MovementCache) ->
     new_stone_map
 }
 
+#[advent_of_code::main]
 fn main() {
     // key: number engraved on stone
     // value: quantity

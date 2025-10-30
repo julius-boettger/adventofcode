@@ -89,6 +89,7 @@ fn explore_recursive(map: &mut Vec<Vec<char>>, coord: Coord, letter: char, regio
     }
 }
 
+#[advent_of_code::main]
 fn main() {
     let mut map: Vec<Vec<char>> = include_str!("../../input/24/12.txt")
         .lines()
