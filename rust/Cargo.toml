@@ -1,6 +1,6 @@
 [package]
 name = "advent_of_code"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 regex = "1.12.2"
