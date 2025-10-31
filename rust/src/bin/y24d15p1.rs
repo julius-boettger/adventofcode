@@ -99,9 +99,7 @@ fn move_robot(grid: &mut [Vec<char>], robot: Coord, direction: Coord) -> Coord {
 
 #[advent_of_code::main("24/15")]
 fn main() {
-    let input = INPUT as &str;
-
-    let mut grid: Vec<Vec<char>> = input
+    let mut grid: Vec<Vec<char>> = INPUT
         .lines()
         .filter(|l| l.contains('#'))
         .map(|l| l
@@ -109,7 +107,7 @@ fn main() {
             .collect())
         .collect();
 
-    let directions: Vec<&Coord> = input
+    let directions: Vec<&Coord> = INPUT
         .lines()
         .filter(|l| l.contains('v'))
         .flat_map(|l| l

@@ -106,7 +106,7 @@ fn blink_at_stones(stone_map: StoneMap, movemement_cache: &mut MovementCache) ->
 fn main() {
     // key: number engraved on stone
     // value: quantity
-    let mut stone_map: StoneMap = (INPUT as &str)
+    let mut stone_map: StoneMap = INPUT
         .replace('\n', "")
         .split(' ')
         .map(|s| (s.parse().unwrap(), 1))

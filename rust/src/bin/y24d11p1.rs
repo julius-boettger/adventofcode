@@ -33,10 +33,9 @@ fn blink_at_stone(stone: Stone) -> Vec<Stone> {
 
 #[advent_of_code::main("24/11")]
 fn main() {
-    let input = (INPUT as &str).replace('\n', "");
-
     // this approach uses 3.5x less memory compared to collecting the iterator into a Vec every time
 
+    let input = INPUT.replace('\n', "");
     let mut stones: Box<dyn Iterator<Item = Stone>> = Box::new(
         input
             .split(' ')

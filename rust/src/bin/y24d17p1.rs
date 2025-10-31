@@ -82,7 +82,7 @@ fn execute_instruction(opcode: &Opcode, operand: u8, regs: &mut Registers, out: 
 
 #[advent_of_code::main("24/17")]
 fn main() {
-    let input_lines: Vec<&str> = (INPUT as &str).lines().collect();
+    let input_lines: Vec<&str> = INPUT.lines().collect();
 
     let mut regs = Registers { a: 0, b: 0, c: 0 };
     regs.a = input_lines[0].replace("Register A: ", "").parse().unwrap();

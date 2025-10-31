@@ -100,7 +100,7 @@ fn main() {
     // construct vec of robots from input
     let mut robots: Vec<Robot> = vec![];
     let pattern = regex::Regex::new(r"p=(-?\d+),(-?\d+) v=(-?\d+),(-?\d+)").unwrap();
-    for line in (INPUT as &str).lines() {
+    for line in INPUT.lines() {
         let Some(capture_groups) = pattern.captures(line) else {
             panic!("pattern doesn't match line: {line}");
         };

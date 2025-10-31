@@ -23,7 +23,7 @@ fn next_nth_secret_number(secret_number: Num) -> Num {
 
 #[advent_of_code::main("24/22")]
 fn main() {
-    println!("{}", (INPUT as &str)
+    println!("{}", INPUT
         .par_lines()
         .map(|line| next_nth_secret_number(line.parse::<Num>().unwrap()))
         .sum::<Num>()

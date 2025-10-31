@@ -3,7 +3,6 @@ use proc_macro::TokenStream;
 /// to be used on the `main` function like `#[advent_of_code::main("24/11")]`.
 /// 
 /// reads the input file for the given year and day into `const INPUT: &str` (in the `main` function).
-/// this is best used as `(INPUT as &str)`, to give rust-analyzer a hint what type it has.
 /// it also sets up heap profiling with dhat-rs.
 #[proc_macro_attribute]
 pub fn main(attr: TokenStream, item: TokenStream) -> TokenStream {
