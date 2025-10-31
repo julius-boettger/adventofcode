@@ -8,7 +8,7 @@ echo -n "Maximum memory usage"
 set_color normal
 echo -n " (RSS): "
 set_color green --bold
-command time -v $argv > /dev/null 2>| \
+command time -v target/release/$argv[1] > /dev/null 2>| \
     grep "Maximum resident set size" | \
     awk '{print $6 "K"}' | \
     numfmt --from si --to si
