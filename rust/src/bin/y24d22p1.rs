@@ -1,6 +1,6 @@
 use rayon::prelude::*;
 
-type Num = u64;
+type Num = u32;
 
 const fn next_secret_number(secret_number: Num) -> Num {
     let mut result = secret_number;
@@ -23,12 +23,9 @@ fn next_nth_secret_number(secret_number: Num) -> Num {
 
 #[advent_of_code::main("24/22")]
 fn main() {
-    println!("{}", (INPUT as &str).lines()
-        // collect to let rayon do its magic
-        .collect::<Vec<_>>().par_iter()
-        .map(|line|
-            next_nth_secret_number(
-                line.parse::<Num>().unwrap()))
+    println!("{}", (INPUT as &str)
+        .par_lines()
+        .map(|line| next_nth_secret_number(line.parse::<Num>().unwrap()))
         .sum::<Num>()
     );
 }
