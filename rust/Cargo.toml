@@ -10,6 +10,7 @@ num_enum = "0.7.5"
 dhat = "0.3.3" # heap profiling
 quote = "1.0.41" # for proc macros
 syn = "2.0.108" # for proc macros
+petgraph = { version = "0.8.3", features = ["rayon"] }
 
 [lib]
 proc-macro = true
