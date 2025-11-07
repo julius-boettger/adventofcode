@@ -8,20 +8,21 @@ struct Registers {
     c: Reg
 }
 
-fn combo_operand(operand: u8, regs: &Registers) -> Reg {
+const fn combo_operand(operand: u8, regs: &Registers) -> Reg {
     match operand {
-        0 ..= 3 => operand.into(),
+        0 ..= 3 => operand as Reg,
         4 => regs.a,
         5 => regs.b,
         6 => regs.c,
-        _ => panic!()
+        _ => unreachable!()
     }
 }
 
 fn execute_instruction(opcode: u8, operand: u8, regs: &mut Registers, out: &mut Vec<u8>, pc: &mut u8) {
     match opcode {
         0 => {
-            regs.a /= 1 << combo_operand(operand, regs);
+            // same as regs.a /= 2.pow(combo_operand(operand, regs))
+            regs.a >>= combo_operand(operand, regs);
             *pc += 2;
         },
         1 => {
@@ -29,7 +30,8 @@ fn execute_instruction(opcode: u8, operand: u8, regs: &mut Registers, out: &mut 
             *pc += 2;
         },
         2 => {
-            regs.b = combo_operand(operand, regs) % 8;
+            // same as modulo 8
+            regs.b = combo_operand(operand, regs) & 7;
             *pc += 2;
         },
         3 => {
@@ -44,18 +46,21 @@ fn execute_instruction(opcode: u8, operand: u8, regs: &mut Registers, out: &mut 
             *pc += 2;
         },
         5 => {
-            out.push((combo_operand(operand, regs) % 8) as u8);
+            // same as modulo 8
+            out.push((combo_operand(operand, regs) & 7) as u8);
             *pc += 2;
         },
         6 => {
-            regs.b = regs.a / (1 << combo_operand(operand, regs));
+            // same as regs.b = regs.a / 2.pow(combo_operand(operand, regs))
+            regs.b = regs.a >> combo_operand(operand, regs);
             *pc += 2;
         },
         7 => {
-            regs.c = regs.a / (1 << combo_operand(operand, regs));
+            // same as regs.c = regs.a / 2.pow(combo_operand(operand, regs))
+            regs.c = regs.a >> combo_operand(operand, regs);
             *pc += 2;
         }
-        _ => panic!()
+        _ => unreachable!()
     }
 }
 
@@ -73,38 +78,38 @@ fn main() {
         .map(|x| x.parse().unwrap())
         .collect();
 
+    let mut out = Vec::new();
+    let mut pc: u8;
     let mut initial_a: Reg = 0;
     'a_loop: loop {
 
-        if initial_a % 100_000_000 == 0 {
-            println!("attempting a = {initial_a}");
+        // TODO: remove, only for timing purposes
+        if initial_a == 100_000_000 {
+            break;
         }
 
         regs.a = initial_a;
         regs.b = 0;
         regs.c = 0;
-
-        // output of program
-        let mut out: Vec<u8> = vec![];
-
-        // program counter
-        let mut pc: u8 = 0;
+        pc = 0;
+        out.clear(); // keep capacity
 
         'pc_loop: while pc < u8::try_from(program.len() - 1).unwrap() {
             let opcode = program[pc as usize];
             let operand = program[(pc + 1) as usize];
             execute_instruction(opcode, operand, &mut regs, &mut out, &mut pc);
 
-            // only continue execution if output matches program (so far)
-            for i in 0 .. out.len() {
-                if out[i] != program[i] {
+            if !out.is_empty() {
+                // only continue execution if output matches program (so far)
+                let last_index = out.len() - 1;
+                if out[last_index] != program[last_index] {
                     break 'pc_loop;
                 }
-            }
 
-            // output is the same as program!
-            if out.len() == program.len() {
-                break 'a_loop;
+                // output is the same as program!
+                if out.len() == program.len() {
+                    break 'a_loop;
+                }
             }
         }
 
