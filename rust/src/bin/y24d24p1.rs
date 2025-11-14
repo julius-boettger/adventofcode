@@ -12,34 +12,46 @@ struct Node {
     gate_type: GateType
 }
 
+impl std::fmt::Debug for Node {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let value = match self.gate_type {
+            GateType::Phantom(signal) =>
+                signal.map_or("-", |signal|
+                    if signal { "1" } else { "0" }),
+            GateType::Real(gate) => match gate {
+                Gate::And => "&",
+                Gate::Or => "|",
+                Gate::Xor => "^",
+            },
+        };
+        write!(f, "{} => {}", value, self.output_wire)
+    }
+}
+
+#[derive(PartialEq)]
 enum GateType {
     Phantom(Signal),
     Real(Gate)
 }
 
-#[derive(Debug)]
+#[derive(Copy, Clone, PartialEq)]
 enum Gate {
     And,
     Or,
     Xor
 }
-use Gate::{And, Or, Xor};
 
-struct Connection {
-    input_1: WireName,
-    input_2: WireName,
-    gate: Gate,
-    output: WireName,
-}
-
-fn insert_start_value(circuit: &mut Circuit, node_map: &mut NodeMap, wire_name: WireName, start_value: bool) {
-    if node_map.get(wire_name).is_none() {
-        let node = Node {
-            output_wire: wire_name,
-            gate_type: GateType::Phantom(Some(start_value))
-        };
+fn insert_node(circuit: &mut Circuit, node_map: &mut NodeMap, output_wire: WireName, gate_type: GateType) -> NodeIndex {
+    if let Some(node_index) = node_map.get(output_wire) {
+        if circuit[*node_index].gate_type == GateType::Phantom(None) && gate_type != GateType::Phantom(None) {
+            circuit[*node_index].gate_type = gate_type;
+        }
+        *node_index
+    } else {
+        let node = Node { output_wire, gate_type };
         let node_index = circuit.add_node(node);
-        node_map.insert(wire_name, node_index);
+        node_map.insert(output_wire, node_index);
+        node_index
     }
 }
 
@@ -56,25 +68,36 @@ fn main() {
         let parts = line.split(": ").collect::<Vec<_>>();
         let wire_name = parts[0];
         let start_value = parts[1].parse::<u8>().unwrap() != 0;
-        insert_start_value(&mut circuit, &mut node_map, wire_name, start_value);
+        insert_node(&mut circuit, &mut node_map, wire_name, GateType::Phantom(Some(start_value)));
     }
 
-    let connections = relation_input.lines().map(|line| {
+    for line in relation_input.lines() {
         let parts = line.split(' ').collect::<Vec<_>>();
-        Connection {
-            input_1: parts[0],
-            input_2: parts[2],
-            output: parts[4],
-            gate: match parts[1] {
-                "AND" => And,
-                "OR" => Or,
-                "XOR" => Xor,
-                _ => unreachable!()
-            }
-        }
-    }).collect::<Vec<_>>();
 
-    // - register all nodes mentioned in connections with GateType::Phantom(None)
-    // - register actual connections as edges in graph, possibly update node gate types 
-    // - simulate signals starting from the starting values
+        let gate = match parts[1] {
+            "AND" => Gate::And,
+            "OR" => Gate::Or,
+            "XOR" => Gate::Xor,
+            _ => unreachable!()
+        };
+
+        let input_1 = insert_node(&mut circuit, &mut node_map, parts[0], GateType::Phantom(None));
+        let input_2 = insert_node(&mut circuit, &mut node_map, parts[2], GateType::Phantom(None));
+        let output = insert_node(&mut circuit, &mut node_map, parts[4], GateType::Real(gate));
+
+        circuit.add_edge(input_1, output, None);
+        circuit.add_edge(input_2, output, None);
+    }
+
+    #[cfg(debug_assertions)] {
+        use std::io::Write;
+        let mut graph_file = std::fs::File::create("graph.dot").unwrap();
+        write!(graph_file, "{:?}", petgraph::dot::Dot::new(&circuit)).unwrap();
+        std::process::Command::new("dot")
+            .args(["graph.dot", "-Tsvg", "-o", "graph.svg"])
+            .status().unwrap();
+    }
+
+    // simulate signals starting from the starting values
+    // keep track of which nodes have already written their output signal onto the wires
 }
