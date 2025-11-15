@@ -1,5 +1,5 @@
 /.direnv
 /target
 /dhat-heap.json
-/graph.*
+/*graph*
 /profile.json.gz

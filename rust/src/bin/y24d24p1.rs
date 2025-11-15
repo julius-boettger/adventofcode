@@ -7,6 +7,7 @@ type Signal = Option<bool>;
 type NodeMap = HashMap<WireName, NodeIndex>;
 type Circuit = DiGraph<Node, Signal, u32>;
 
+#[derive(Debug)]
 struct Node {
     output_wire: WireName,
     output_status: WireStatus,
@@ -14,22 +15,6 @@ struct Node {
     /// number of input wires (egdes) coming from gates (nodes)
     /// with `output_status = WireStatus::Done`
     inputs_done: u8,
-}
-
-impl std::fmt::Debug for Node {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let value = match self.gate_type {
-            GateType::Phantom(signal) =>
-                signal.map_or("-", |signal|
-                    if signal { "1" } else { "0" }),
-            GateType::Logical(gate) => match gate {
-                Gate::And => "&",
-                Gate::Or => "|",
-                Gate::Xor => "^",
-            },
-        };
-        write!(f, "{} => {}\n{:?}", value, self.output_wire, self.output_status)
-    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -42,13 +27,13 @@ enum WireStatus {
     Done
 }
 
-#[derive(PartialEq)]
+#[derive(Debug, PartialEq)]
 enum GateType {
     Phantom(Signal),
     Logical(Gate)
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 enum Gate {
     And,
     Or,
@@ -72,6 +57,40 @@ fn insert_node(circuit: &mut Circuit, node_map: &mut NodeMap, output_wire: WireN
         node_index
     }
 }
+
+fn signal_char(signal: Signal) -> char {
+    signal.map_or('?', |signal|
+        if signal { '1' } else { '0' })
+}
+
+fn save_graph_visualization(circuit: &Circuit, name: &str) {
+    #[cfg(debug_assertions)] {
+        use std::io::Write;
+        let dot = petgraph::dot::Dot::with_attr_getters(
+            &circuit, &[],
+            &|_, edge|
+                format!("label=\"{}\"", signal_char(*edge.weight())),
+            &|_, (_, node)| {
+                let value = match node.gate_type {
+                    GateType::Phantom(signal) => signal_char(signal),
+                    GateType::Logical(gate) => match gate {
+                        Gate::And => '&',
+                        Gate::Or => '|',
+                        Gate::Xor => '^',
+                    },
+                };
+                format!("label=\"{} => {}\n{:?}\"", value, node.output_wire, node.output_status)
+            },
+        );
+        let dot_name = format!("{name}.dot");
+        let mut graph_file = std::fs::File::create(&dot_name).unwrap();
+        write!(graph_file, "{dot:?}").unwrap();
+        std::process::Command::new("dot")
+            .args([&dot_name, "-Tsvg", "-o", &format!("{name}.svg")])
+            .status().unwrap();
+    }
+}
+
 
 #[advent_of_code::main("24/24")]
 fn main() {
@@ -106,6 +125,8 @@ fn main() {
         circuit.add_edge(input_1, output, None);
         circuit.add_edge(input_2, output, None);
     }
+
+    save_graph_visualization(&circuit, "first_graph");
 
     // needs to be at least as wide as the highest zXX
     // wire name number, which is 45 for my input 
@@ -161,15 +182,5 @@ fn main() {
 
     println!("{result}");
 
-    #[cfg(debug_assertions)] {
-        use std::io::Write;
-        let mut graph_file = std::fs::File::create("graph.dot").unwrap();
-        write!(graph_file, "{:?}", petgraph::dot::Dot::new(&circuit)).unwrap();
-        std::process::Command::new("dot")
-            .args(["graph.dot", "-Tsvg", "-o", "graph.svg"])
-            .status().unwrap();
-    }
-
-    // simulate signals starting from the starting values
-    // keep track of which nodes have already written their output signal onto the wires
+    save_graph_visualization(&circuit, "final_graph");
 }
