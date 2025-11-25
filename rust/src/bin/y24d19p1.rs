@@ -2,10 +2,41 @@
 
 use std::cmp::Ordering::{Equal, Greater, Less};
 
+macro_rules! top {
+    ($stack: expr) => {
+        $stack.last().unwrap()
+    };
+}
+macro_rules! top_mut {
+    ($stack: expr) => {
+        $stack.last_mut().unwrap()
+    };
+}
+macro_rules! top_patterns {
+    ($stack: expr) => {
+        top!($stack).matching_patterns.as_ref().unwrap()
+    };
+}
+macro_rules! top_patterns_mut {
+    ($stack: expr) => {
+        top_mut!($stack).matching_patterns.as_mut().unwrap()
+    };
+}
+
 struct StackItem {
     /// pointing to char in the design string
     matched_design_chars: u8,
-    matching_pattern_index: u8
+    /// `None` means "not checked yet", last element of `Some` is used
+    matching_patterns: Option<Vec<&'static str>>
+}
+impl StackItem {
+    const fn new(matched_design_chars: usize) -> Self {
+        Self {
+            #[allow(clippy::cast_possible_truncation)]
+            matched_design_chars: matched_design_chars as u8,
+            matching_patterns: None
+        }
+    }
 }
 
 #[advent_of_code::main("24/19")]
@@ -21,50 +52,51 @@ fn main() {
         println!("checking design {i}");
 
         stack.clear();
-        stack.push(StackItem {
-            matched_design_chars: 0,
-            matching_pattern_index: 0
-        });
+        stack.push(StackItem::new(0));
 
         'inner: loop {
-            let stack_item = stack.last_mut().unwrap();
+            if top!(stack).matching_patterns.is_none() {
+                let mut matching_patterns = patterns.iter()
+                    .filter(|p| design[top!(stack).matched_design_chars.into()..].starts_with(*p))
+                    .copied()
+                    .collect::<Vec<_>>();
+                // sort by ascending pattern length
+                matching_patterns.sort_unstable_by_key(|a| a.len());
+                top_mut!(stack).matching_patterns = Some(matching_patterns);
+            }
 
-            // TODO: calculate matching patterns once, sort them by length (longest first) and store in stack item
-            let Some(matching_pattern) = patterns.iter()
-                .filter(|p| design[stack_item.matched_design_chars.into()..].starts_with(*p))
-                .nth(stack_item.matching_pattern_index.into())
-            else {
+            if top_patterns!(stack).is_empty() {
                 stack.pop();
                 if stack.is_empty() {
                     // this design is impossible 
                     continue 'outer;
                 }
                 // try next pattern for step before that
-                stack.last_mut().unwrap().matching_pattern_index += 1;
+                top_patterns_mut!(stack).pop();
                 continue 'inner;
-            };
+            }
 
             #[allow(clippy::cast_possible_truncation)]
-            let design_length = design.len() as u8;
-            #[allow(clippy::cast_possible_truncation)]
-            let matched_design_chars = stack_item.matched_design_chars + matching_pattern.len() as u8;
+            let matched_design_chars = top!(stack).matched_design_chars as usize + top!(top_patterns!(stack)).len();
 
-            match matched_design_chars.cmp(&design_length) {
+            match matched_design_chars.cmp(&design.len()) {
+                // we have not reached the end yet, keep going
+                Less => stack.push(StackItem::new(matched_design_chars)),
                 Equal => {
                     // design is possible!
                     possible_designs += 1;
                     continue 'outer;
                 },
+                // current chosen pattern is too long, try next fitting match
                 Greater => {
-                    // current chosen pattern is too long, try the next match
-                    stack_item.matching_pattern_index += 1;
-                },
-                Less => {
-                    // we have not reached the end yet, keep going
-                    stack.push(StackItem {
-                        matched_design_chars,
-                        matching_pattern_index: 0
-                    });
+                    // top is too long => pop
+                    top_patterns_mut!(stack).pop();
+                    // remove all other patterns that are too long
+                    let remaining_chars = design.len() - top!(stack).matched_design_chars as usize;
+                    *top_patterns_mut!(stack) = top_patterns!(stack).iter()
+                        .filter(|p| p.len() < remaining_chars)
+                        .copied()
+                        .collect();
                 },
             }
         }
