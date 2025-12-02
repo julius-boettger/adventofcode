@@ -6,9 +6,13 @@ fn is_invalid(id: ID) -> bool {
     let id = id.to_string();
     let len = id.len();
 
-    // TODO: early-detect cases like 1111?
+    // early-detect cases where all digits in the ID are the same
+    let first_char = id.chars().next().unwrap();
+    if id.chars().all(|c| c == first_char) {
+        return true
+    }
 
-    for chunk_size in 1 ..= len/2 {
+    for chunk_size in 2 ..= len/2 {
         if len % chunk_size != 0 {
             continue;
         }
