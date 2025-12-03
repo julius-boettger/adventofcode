@@ -3,44 +3,37 @@ type JoltageSum = u64;
 /// batteries per pank to turn on
 const BATS: usize = 12;
 
-fn max_byte(bank: &str) -> (u8, usize) {
-    let mut max_byte = 0;
-    let mut max_pos = 0;
+fn max_byte_pos(bank: &str) -> usize {
+    let mut max = (0, 0);
     for (pos, byte) in bank.bytes().enumerate() {
-        if byte > max_byte {
-            max_byte = byte;
-            max_pos = pos;
+        if byte > max.0 {
+            max = (byte, pos);
+            if byte == b'9' {
+                return pos;
+            }
         }
     }
-    (max_byte, max_pos)
+    max.1
 }
 
 #[advent_of_code::main("25/03")]
 fn main() {
     println!("{}", INPUT.lines()
         .map(|bank| {
-            let mut battery_bytes = [0; BATS];
-            let mut battery_positions = [0; BATS];
-
-            let (first_byte, first_byte_pos) = max_byte(&bank[..bank.len() - (BATS-1)]);
-            battery_bytes[BATS-1] = first_byte;
-            battery_positions[BATS-1] = first_byte_pos;
+            let mut bat_positions = [0; BATS];
+            bat_positions[BATS-1] = max_byte_pos(&bank[..bank.len() - (BATS-1)]);
 
             for i in (0..(BATS-1)).rev() {
-                let last_pos = battery_positions[i+1];
-                let relevant_bank = &bank[last_pos+1 .. bank.len()-i];
-                let (byte, pos) = max_byte(relevant_bank);
-                battery_bytes[i] = byte;
-                battery_positions[i] = pos + (last_pos+1);
+                let last_pos = bat_positions[i + 1];
+                let bank_start = last_pos + 1;
+                bat_positions[i] = max_byte_pos(&bank[bank_start .. bank.len()-i]) + bank_start;
             }
             
-            let joltage = battery_bytes.into_iter()
+            bat_positions.into_iter()
                 .enumerate()
-                .map(|(i, byte)|
-                    JoltageSum::from(byte - b'0') * JoltageSum::from(10u8).pow(i.try_into().unwrap()))
-                .sum::<JoltageSum>();
-            println!("{bank} => {joltage}");
-            joltage
+                .map(|(i, bat_pos)|
+                    JoltageSum::from(bank.as_bytes()[bat_pos] - b'0') * JoltageSum::from(10u8).pow(i.try_into().unwrap()))
+                .sum::<JoltageSum>()
         })
         .sum::<JoltageSum>()
     );
