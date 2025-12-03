@@ -1,5 +1,3 @@
-// doesnt work yet, answer is too low, dont know why, example input works
-
 #[advent_of_code::main("25/01")]
 fn main() {
     let rotations = INPUT.lines()
@@ -14,10 +12,7 @@ fn main() {
     let mut position = 50;
     for rotation in rotations {
         position += rotation;
-        if position > 99 { position -= 100; }
-        if position <  0 { position += 100; }
-        
-        if position == 0 {
+        if position % 100 == 0 {
             password += 1;
         }
     }
