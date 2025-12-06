@@ -1,19 +1,20 @@
 type Num = u64;
 
-fn get_char(input: &'static str, row: usize, col: usize) -> char {
-    input.lines().nth(row).unwrap().chars().nth(col).unwrap()
+fn get_char(lines: &[&'static str], row: usize, col: usize) -> char {
+    char::from(lines[row].as_bytes()[col])
 }
 
 #[advent_of_code::main("25/06")]
 fn main() {
-    let ops_row = INPUT.lines().position(|l| l.starts_with('*') || l.starts_with('+')).unwrap();
+    let input_lines = INPUT.lines().collect::<Vec<_>>();
+    let ops_row = input_lines.iter().position(|l| l.starts_with('*') || l.starts_with('+')).unwrap();
 
     let mut current_op = '\0';
     let mut results: Vec<Num> = Vec::new();
     let mut current_result = 0;
-    for col in 0..INPUT.lines().next().unwrap().len() {
-        let op_char = get_char(INPUT, ops_row, col);
-        if op_char == '+' || op_char == '*' {
+    for col in 0..input_lines[0].len() {
+        let op_char = get_char(&input_lines, ops_row, col);
+        if op_char != ' ' {
             current_op = op_char;
             if !results.is_empty() {
                 current_result += 1;
@@ -22,10 +23,11 @@ fn main() {
 
         let mut num = String::new();
         for row in 0..ops_row {
-            let c = get_char(INPUT, row, col);
-            if c.is_ascii_digit() {
-                num.push(c);
+            let c = get_char(&input_lines, row, col);
+            if c == ' ' {
+                continue;
             }
+            num.push(c);
         }
 
         if num.is_empty() {
