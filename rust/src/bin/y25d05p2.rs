@@ -67,10 +67,10 @@ fn main() {
 
             valid_ranges[modify_i] = modified_range;
             any_modified = true;
-            // should be fine because we iterate in reverse,
+
+            // ok because we iterate in reverse,
             // swapped elements have already been checked
-            //valid_ranges.swap_remove(i);
-            valid_ranges.remove(iter_i);
+            valid_ranges.swap_remove(iter_i);
 
             if valid_ranges.len() == 1 {
                 break 'outer;
