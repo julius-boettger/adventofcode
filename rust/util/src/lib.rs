@@ -1,1 +1,3 @@
-const MY_CONST: u8 = 0;
+mod cache;
+
+pub use cache::Cache;
