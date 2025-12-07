@@ -21,13 +21,7 @@ checksum = "512761e0bb2578dd7380c6baaa0f4ce03e84f95e960231d1dec8bf4d7d6e2627"
 name = "advent_of_code"
 version = "0.0.0"
 dependencies = [
- "dhat",
- "image",
- "num_enum",
- "petgraph",
  "quote",
- "rayon",
- "regex",
  "syn",
 ]
 
@@ -1065,6 +1059,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3c5e1a9a646d36c3599cd173a41282daf47c44583ad367b8e6837255952e5c67"
 
 [[package]]
+name = "solutions"
+version = "0.0.0"
+dependencies = [
+ "advent_of_code",
+ "dhat",
+ "image",
+ "num_enum",
+ "petgraph",
+ "rayon",
+ "regex",
+ "util",
+]
+
+[[package]]
 name = "syn"
 version = "2.0.108"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1173,6 +1181,10 @@ name = "unicode-ident"
 version = "1.0.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "adb9e6ca4f869e1180728b7950e35922a7fc6397f7b641499e8f3ef06e50dc83"
+
+[[package]]
+name = "util"
+version = "0.0.0"
 
 [[package]]
 name = "v_frame"

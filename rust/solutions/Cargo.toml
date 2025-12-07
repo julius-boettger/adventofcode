@@ -1,0 +1,18 @@
+[package]
+name = "solutions"
+edition = "2024"
+
+[dependencies]
+regex = "1.12.2"
+image = "0.25.8"
+rayon = "1.11.0"
+num_enum = "0.7.5"
+dhat = "0.3.3" # heap profiling
+petgraph = { version = "0.8.3", features = ["rayon"] }
+# own utility libraries
+util = { path = "../util" }
+advent_of_code = { path = "../proc_lib" }
+
+# for heap profiling with dhat-rs
+[features]
+dhat-heap = []
