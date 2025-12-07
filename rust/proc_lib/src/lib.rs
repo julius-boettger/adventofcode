@@ -8,7 +8,7 @@ use proc_macro::TokenStream;
 pub fn main(attr: TokenStream, item: TokenStream) -> TokenStream {
     // parse the attribute as a string literal (assuming the input ID in "YY/DD" format)
     let input_id = syn::parse_macro_input!(attr as syn::LitStr);
-    let input_file_path = syn::LitStr::new(&format!("../../input/{}.txt", input_id.value()), input_id.span());
+    let input_file_path = syn::LitStr::new(&format!("../../../input/{}.txt", input_id.value()), input_id.span());
 
     // parse the input as a function (assuming the main function)
     let main_function_body = syn::parse_macro_input!(item as syn::ItemFn).block;
