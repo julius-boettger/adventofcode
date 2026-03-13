@@ -13,7 +13,7 @@ fn blink_at_stone(stone: Stone) -> Vec<Stone> {
     }
 
     let stone_digits = stone.ilog10() + 1;
-    if stone_digits % 2 == 0 {
+    if stone_digits.is_multiple_of(2) {
         // "1234" => ["12", "34"]
         // power of 10 that devides the two halves of digits
         let split_indicator: Stone = Stone::from(10u8).pow(stone_digits / 2);

@@ -54,6 +54,7 @@ const EXPLORED: char = '.';
 
 fn get_unexplored_region_start(map: &[Vec<char>]) -> Option<Coord> {
     for row in 0 .. map.len() {
+        #[allow(clippy::needless_range_loop)]
         for col in 0 .. map[0].len() {
             if map[row][col] != EXPLORED {
                 #[allow(clippy::cast_possible_wrap, clippy::cast_possible_truncation)]

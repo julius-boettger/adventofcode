@@ -13,7 +13,7 @@ fn is_invalid(id: ID) -> bool {
     }
 
     for chunk_size in 2 ..= len/2 {
-        if len % chunk_size != 0 {
+        if !len.is_multiple_of(chunk_size) {
             continue;
         }
 

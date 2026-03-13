@@ -6,7 +6,7 @@ fn is_invalid(id: ID) -> bool {
     let id = id.to_string();
     let len = id.len();
 
-    if len % 2 != 0 {
+    if !len.is_multiple_of(2) {
         return false;
     }
 

@@ -47,6 +47,7 @@ const UP:    Coord = Coord { row: -1, col:  0 };
 
 fn get_robot(grid: &[Vec<char>]) -> Coord {
     for row in 0 .. grid.len() {
+        #[allow(clippy::needless_range_loop)]
         for col in 0 .. grid[0].len() {
             if grid[row][col] == '@' {
                 return Coord {
@@ -125,6 +126,7 @@ fn main() {
 
     let mut box_gps_sum = 0;
     for row in 0 .. grid.len() {
+        #[allow(clippy::needless_range_loop)]
         for col in 0 .. grid[0].len() {
             if grid[row][col] == 'O' {
                 box_gps_sum += (100 * row) + col;
