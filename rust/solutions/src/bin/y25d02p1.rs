@@ -3,20 +3,16 @@ use rayon::prelude::*;
 type ID = u64;
 
 fn is_invalid(id: ID) -> bool {
-    let id = id.to_string();
-    let len = id.len();
+    let len = id.ilog10() + 1;
 
     if !len.is_multiple_of(2) {
         return false;
     }
 
-    let half_1 = &id[..len/2  ];
-    let half_2 = &id[  len/2..];
-    if half_1 == half_2 {
-        return true;
-    }
-
-    false
+    let split_indicator = ID::from(10u8).pow(len / 2);
+    let half_1 = id / split_indicator;
+    let half_2 = id - (half_1 * split_indicator);
+    half_1 == half_2
 }
 
 #[advent_of_code::main("25/02")]
