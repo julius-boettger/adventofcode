@@ -1,15 +1,15 @@
 use rayon::prelude::*;
 
-type Num = u32;
+type Num = u64;
 
 const fn next_secret_number(secret_number: Num) -> Num {
     let mut result = secret_number;
-    result ^= result * 64;
-    result %= 16_777_216;
-    result ^= result / 32;
-    result %= 16_777_216;
-    result ^= result * 2048;
-    result %= 16_777_216;
+    result ^= result << 6;
+    result &= 0x00FF_FFFF;
+    result ^= result >> 5;
+    result &= 0x00FF_FFFF;
+    result ^= result << 11;
+    result &= 0x00FF_FFFF;
     result
 }
 
