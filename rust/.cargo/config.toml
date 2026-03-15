@@ -1,2 +1,6 @@
 [alias]
 profile-heap = "run --release --features dhat-heap"
+
+[build]
+# make use of all available cpu features like AVX extensions
+rustflags = ["-C", "target-cpu=native"]
