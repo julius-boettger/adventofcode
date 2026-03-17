@@ -19,13 +19,13 @@ executable(
     cpp_args: [
         '-std=c++23',
         # set path to input for day
-        '-DINPUT_PATH="input/' + day + '.txt"',
+        '-DINPUT_PATH="../../input/24/' + day + '.txt"',
         # throw errors when using compiler extensions
         '-pedantic-errors',
         # treat warnings as errors
         '-Werror',
         # except some trivial warnings
-        '-Wno-error=unused-parameter', '-Wno-error=unused-variable', '-Wno-error=unused-but-set-variable',
+        '-Wno-error=unused-parameter', '-Wno-error=unused-variable', '-Wno-error=unused-but-set-variable', '-Wno-error=cpp',
         # enable more warnings
         '-Wall', '-Weffc++', '-Wextra', '-Wconversion', '-Wsign-conversion', '-Wshadow',
     ],
